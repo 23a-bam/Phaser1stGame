@@ -79,8 +79,35 @@ function create ()
     player.body.setGravityY(300);
     // додає зіткнення з платформами
     this.physics.add.collider(player, platforms);
+
+    // реєструє стрілки вліво, вправо, вгору, вниз
+    cursors = this.input.keyboard.createCursorKeys();
 }
 
 function update ()
 {
+    if (cursors.left.isDown) // якщо натиснута стрілка вліво
+    {
+        player.setVelocityX(-160); // йти вліво
+
+        player.anims.play('left', true); // грати анімацію руху вліво
+    }
+    else if (cursors.right.isDown) // якщо натиснута стрілка вправо
+    {
+        player.setVelocityX(160); // йти вправо
+
+        player.anims.play('right', true); // грати анімацію руху вправо
+    }
+    else // якщо не натиснута стрілка вліво чи вправо
+    {
+        player.setVelocityX(0); // зупинитись
+
+        player.anims.play('turn'); // грати анімацію стояння
+    }
+
+    if (cursors.up.isDown && player.body.touching.down)
+    {
+        // стрибнути, якщо натиснута стрілка вгору і гравець торкається землі
+        player.setVelocityY(-490);
+    }
 }
