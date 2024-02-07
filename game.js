@@ -84,14 +84,14 @@ function create ()
     cursors = this.input.keyboard.createCursorKeys();
 
     // зірки
-    stars = this.physics.add.group({
+    stars = this.physics.add.group({ // динамічна група
         key: 'star',
-        repeat: 11,
-        setXY: { x: 12, y: 0, stepX: 70 }
+        repeat: 11, // повторити ще 11 раз (всього 12)
+        setXY: { x: 12, y: 0, stepX: 70 } // задати початкову позицію зірок
     });
     
-    stars.children.iterate(function (child) {
-        child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+    stars.children.iterate(function (child) { // для кожної зірки у групі
+        child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8)); // стрибучість зірок задати випадкове від 0.4 (40%) до 0.8 (80%)
     });
 
     // зіткнення зірок з платформами
