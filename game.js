@@ -74,6 +74,11 @@ function create ()
         frameRate: 10,
         repeat: -1
     });
+
+    // гравітація для гравця
+    player.body.setGravityY(300);
+    // додає зіткнення з платформами
+    this.physics.add.collider(player, platforms);
 }
 
 function update ()
