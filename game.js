@@ -19,6 +19,9 @@ var config = {
 
 var game = new Phaser.Game(config);
 
+var score = 0; // кількість очків
+var scoreText; // текстова змінна для очків
+
 function preload ()
 {
     // завантаження об'єктів у гру
@@ -99,6 +102,8 @@ function create ()
 
     // перевірка, чи дотикається зірка до гравця
     this.physics.add.overlap(player, stars, collectStar, null, this);
+
+    scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' }); // додати текст до текстової змінної очків
 }
 
 function update ()
@@ -133,4 +138,7 @@ function update ()
 function collectStar (player, star)
 {
     star.disableBody(true, true); // видалити зірку
+
+    score += 10; // додати 10 очків
+    scoreText.setText('Score: ' + score); // оновити 
 }
