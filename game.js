@@ -104,6 +104,13 @@ function create ()
     this.physics.add.overlap(player, stars, collectStar, null, this);
 
     scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' }); // додати текст до текстової змінної очків
+
+    // бомби
+    bombs = this.physics.add.group();
+
+    this.physics.add.collider(bombs, platforms);
+
+    this.physics.add.collider(player, bombs, hitBomb, null, this);
 }
 
 function update ()
@@ -140,5 +147,36 @@ function collectStar (player, star)
     star.disableBody(true, true); // видалити зірку
 
     score += 10; // додати 10 очків
-    scoreText.setText('Score: ' + score); // оновити 
+    scoreText.setText('Score: ' + score); // оновити
+
+    if (stars.countActive(true) === 0) // якщо немає більше зірок
+    {
+        // перезавантажити усі зірки
+        stars.children.iterate(function (child) {
+            child.enableBody(true, child.x, 0, true, true);
+        });
+
+        // обрати x в протилежній частині екрану від гравця, випадково
+        var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+
+        // створити одну бомбу
+        var bomb = bombs.create(x, 16, 'bomb');
+        bomb.setBounce(1); // максимальна стрибучість
+        bomb.setCollideWorldBounds(true);
+        bomb.setVelocity(Phaser.Math.Between(-200, 200), 20); // з випадковою швидкістю
+
+        // коли усі зірки знову зібрані, додає ще 1 бомбу, і т.д, даючи можливість зібрати ще більше очок
+    }
+}
+
+// коли гравець зіштовхнувся з бомбою
+function hitBomb (player, bomb)
+{
+    this.physics.pause(); // зупинити гру
+
+    player.setTint(0xff0000); // замалювати гравця червоним кольором
+
+    player.anims.play('turn');
+
+    gameOver = true;
 }
