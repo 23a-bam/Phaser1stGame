@@ -77,11 +77,28 @@ function create ()
 
     // гравітація для гравця
     player.body.setGravityY(300);
-    // додає зіткнення з платформами
+    // додає зіткнення гравця з платформами
     this.physics.add.collider(player, platforms);
 
     // реєструє стрілки вліво, вправо, вгору, вниз
     cursors = this.input.keyboard.createCursorKeys();
+
+    // зірки
+    stars = this.physics.add.group({
+        key: 'star',
+        repeat: 11,
+        setXY: { x: 12, y: 0, stepX: 70 }
+    });
+    
+    stars.children.iterate(function (child) {
+        child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+    });
+
+    // зіткнення зірок з платформами
+    this.physics.add.collider(stars, platforms);
+
+    // перевірка, чи дотикається зірка до гравця
+    this.physics.add.overlap(player, stars, collectStar, null, this);
 }
 
 function update ()
@@ -110,4 +127,10 @@ function update ()
         // стрибнути, якщо натиснута стрілка вгору і гравець торкається землі
         player.setVelocityY(-490);
     }
+}
+
+// коли гравець отримав зірку
+function collectStar (player, star)
+{
+    star.disableBody(true, true); // видалити зірку
 }
