@@ -21,6 +21,9 @@ var game = new Phaser.Game(config);
 
 var score = 0; // кількість очків
 var scoreText; // текстова змінна для очків
+var timer = 0; // *100 мс
+var timerText; // текстова змінна для таймера
+var timerOn = false; // показує, чи увімкнений таймер, що вмикається після першої зібраної зірки
 
 function preload ()
 {
@@ -104,14 +107,21 @@ function create ()
     // перевірка, чи дотикається зірка до гравця
     this.physics.add.overlap(player, stars, collectStar, null, this);
 
-    scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' }); // додати текст до текстової змінної очків
-
     // бомби
     bombs = this.physics.add.group();
 
     this.physics.add.collider(bombs, platforms);
 
     this.physics.add.collider(player, bombs, hitBomb, null, this);
+
+    scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' }); // додати текст до текстової змінної очків
+    timerText = this.add.text(16, 50, 'Time: 00:00.0', { fontSize: '32px', fill: '#000' }); // додати початковий текст до таймера
+
+    const timerFunction = setInterval(function() {
+        if (!timerOn) {return;} // якщо таймер вимкнено, нічого не робити
+        timer+=1;
+        timerText.setText(formatTimerText(timer));
+      }, 95); // повторювати кожні 95 мс (-5 мс для владнання похибки)
 }
 
 function update ()
@@ -119,25 +129,19 @@ function update ()
     if (cursors.left.isDown) // якщо натиснута стрілка вліво
     {
         player.setVelocityX(-160); // йти вліво
-
         player.anims.play('left', true);
-
         player.flipX = true; // повернути вліво
     }
     else if (cursors.right.isDown) // якщо натиснута стрілка вправо
     {
         player.setVelocityX(160); // йти вправо
-
         player.anims.play('left', true); // грати анімацію руху вправо
-
         player.flipX = false; // повернути вправо
     }
     else // якщо не натиснута стрілка вліво чи вправо
     {
         player.setVelocityX(0); // зупинитись
-
         player.anims.play('turn'); // грати анімацію стояння
-
         // player.flipX = false;
     }
 
@@ -155,6 +159,7 @@ function collectStar (player, star)
 
     score += 10; // додати 10 очків
     scoreText.setText('Score: ' + score); // оновити
+    timerOn = true; // увімкнути таймер, якщо він ще вимкнений
 
     if (stars.countActive(true) === 0) // якщо немає більше зірок
     {
@@ -185,5 +190,20 @@ function hitBomb (player, bomb)
 
     player.anims.play('turn');
 
+    timerOn = false; // вимкнути таймер
+
     gameOver = true;
+}
+
+function formatTimerText(time)
+{
+    // розраховує мілісекунди * 100 (децисекунди), секунди й хвилини
+    let ms = time % 10; // *100 мс
+    let s = Math.floor((time / 10) % 60);
+    let min = Math.floor(time / 600);
+    // якщо кількість секунд і хвилин одноцифрова, додати на початку 0
+    let sText = s < 10 ? "0" + s : "" + s;
+    let mText = min < 10 ? "0" + min : "" + min;
+    // відформатовує текст і повертає
+    return "Time: " + mText + ":" + sText + "." + ms;
 }
