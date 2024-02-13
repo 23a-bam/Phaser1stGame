@@ -119,13 +119,13 @@ function create ()
 
     this.physics.add.collider(player, bombs, hitBomb, null, this);
 
-    scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#000' }); // додати текст до текстової змінної очків
-    timerText = this.add.text(16, 50, 'Time: 00:00.0', { fontSize: '32px', fill: '#000' }); // додати початковий текст до таймера
+    scoreText = this.add.text(16, 16, 'Очок: 0', { fontSize: '32px', fill: '#000' }); // додати текст до текстової змінної очків
+    timerText = this.add.text(16, 50, 'Час: 00:00.0', { fontSize: '32px', fill: '#000' }); // додати початковий текст до таймера
 
     const timerFunction = setInterval(function() {
         if (!timerOn) {return;} // якщо таймер вимкнено, нічого не робити
         timer+=1;
-        timerText.setText("Time: " + formatTimerText(timer));
+        timerText.setText("Час: " + formatTimerText(timer));
       }, 95); // повторювати кожні 95 мс (-5 мс для владнання похибки)
 
     fetchLeaderboard();
@@ -165,7 +165,7 @@ function collectStar (player, star)
     star.disableBody(true, true); // видалити зірку
 
     score += 10; // додати 10 очків
-    scoreText.setText('Score: ' + score); // оновити
+    scoreText.setText('Очок: ' + score); // оновити
     timerOn = true; // увімкнути таймер, якщо він ще вимкнений
 
     if (stars.countActive(true) === 0) // якщо немає більше зірок
