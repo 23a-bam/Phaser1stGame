@@ -26,12 +26,12 @@ function preload ()
 {
     // завантаження об'єктів у гру
     this.load.image('sky', 'assets/sky.png');
-    this.load.image('ground', 'assets/platform.png');
+    this.load.image('ground', 'assets/tile.png');
     this.load.image('star', 'assets/star.png');
     this.load.image('bomb', 'assets/bomb.png');
     this.load.spritesheet('dude', 
-        'assets/dude.png',
-        { frameWidth: 32, frameHeight: 48 }
+        'assets/knight.png',
+        { frameWidth: 117, frameHeight: 141 }
     );
 }
 
@@ -53,6 +53,7 @@ function create ()
     player = this.physics.add.sprite(100, 450, 'dude');
 
     player.setBounce(0.2);
+    player.setScale(0.8);
     player.setCollideWorldBounds(true);
 
     // анімація для руху вліво
@@ -66,17 +67,17 @@ function create ()
     // анімація для стояння
     this.anims.create({
         key: 'turn',
-        frames: [ { key: 'dude', frame: 4 } ],
+        frames: [ { key: 'dude', frame: 2 } ],
         frameRate: 20
     });
 
-    // анімація для руху вправо
+    /* анімація для руху вправо
     this.anims.create({
         key: 'right',
         frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
         frameRate: 10,
         repeat: -1
-    });
+    }); */
 
     // гравітація для гравця
     player.body.setGravityY(300);
@@ -119,19 +120,25 @@ function update ()
     {
         player.setVelocityX(-160); // йти вліво
 
-        player.anims.play('left', true); // грати анімацію руху вліво
+        player.anims.play('left', true);
+
+        player.flipX = true; // повернути вліво
     }
     else if (cursors.right.isDown) // якщо натиснута стрілка вправо
     {
         player.setVelocityX(160); // йти вправо
 
-        player.anims.play('right', true); // грати анімацію руху вправо
+        player.anims.play('left', true); // грати анімацію руху вправо
+
+        player.flipX = false; // повернути вправо
     }
     else // якщо не натиснута стрілка вліво чи вправо
     {
         player.setVelocityX(0); // зупинитись
 
         player.anims.play('turn'); // грати анімацію стояння
+
+        // player.flipX = false;
     }
 
     if (cursors.up.isDown && player.body.touching.down)
