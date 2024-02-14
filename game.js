@@ -56,12 +56,13 @@ function create ()
     platforms.create(600, 400, 'ground');
     platforms.create(50, 250, 'ground');
     platforms.create(750, 220, 'ground');
+    
 
     // гравець
     player = this.physics.add.sprite(100, 450, 'dude');
 
     player.setBounce(0.2);
-    player.setScale(0.8);
+    player.setScale(0.78);
     player.setCollideWorldBounds(true);
 
     // анімація для руху вліво
@@ -75,7 +76,7 @@ function create ()
     // анімація для стояння
     this.anims.create({
         key: 'turn',
-        frames: [ { key: 'dude', frame: 2 } ],
+        frames: [ { key: 'dude', frame: 3 } ],
         frameRate: 20
     });
 
