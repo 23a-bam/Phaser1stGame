@@ -30,6 +30,9 @@ var time120 = 0;
 var time250 = 0;
 var time500 = 0; // змінні, що зберігають час проходження (*100 мс)
 
+var level = 1; // рівень
+var scoreIncrement = 10;
+
 function preload ()
 {
     // завантаження об'єктів у гру
@@ -130,6 +133,8 @@ function create ()
       }, 95); // повторювати кожні 95 мс (-5 мс для владнання похибки)
 
     fetchLeaderboard();
+
+//  changeLevel(3);
 }
 
 function update ()
@@ -165,7 +170,7 @@ function collectStar (player, star)
 {
     star.disableBody(true, true); // видалити зірку
 
-    score += 10; // додати 10 очків
+    score += scoreIncrement; // додати 9 + (номер рівня) очків
     scoreText.setText('Очок: ' + score); // оновити
     timerOn = true; // увімкнути таймер, якщо він ще вимкнений
 
@@ -193,15 +198,15 @@ function collectStar (player, star)
         highScore = score;
         update = true;
     }
-    if (score == 120 && (timer < time120 || time120 == 0)) {
+    if (score >= 120 && (timer < time120 || time120 == 0)) {
         time120 = timer;
         update = true;
     }
-    if (score == 250 && (timer < time250 || time250 == 0)) {
+    if (score >= 250 && (timer < time250 || time250 == 0)) {
         time250 = timer;
         update = true;
     }
-    if (score == 500 && (timer < time500 || time500 == 0)) {
+    if (score >= 500 && (timer < time500 || time500 == 0)) {
         time500 = timer;
         update = true;
     }
@@ -275,4 +280,26 @@ function saveCookie(data)
     str = data[0] +  " " + data[1] + " " + data[2] + " " + data[3];
     // зберегти cookie
     document.cookie = "data=" + str + "; expires=Thu, 12 Feb 2026 12:00:00 UTC";
+}
+
+function changeLevel(level)
+{
+    platforms.clear(true, true); // очищає всі платформи
+    platforms.create(400, 568, 'ground').setScale(2).refreshBody();
+    if (level == 1) {
+        platforms.create(600, 400, 'ground');
+        platforms.create(50, 250, 'ground');
+        platforms.create(750, 220, 'ground');
+    }
+    if (level == 2) {
+        platforms.create(200, 380, 'ground');
+        platforms.create(100, 250, 'ground');
+    }
+    if (level == 3) {
+        platforms.create(555, 360, 'ground');
+        platforms.create(100, 200, 'ground');
+        platforms.create(700, 200, 'ground');
+    }
+
+    scoreIncrement = 9 + level; // змінити кількість очок, що нараховується
 }
