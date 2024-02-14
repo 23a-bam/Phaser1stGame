@@ -31,7 +31,9 @@ var time250 = 0;
 var time500 = 0; // змінні, що зберігають час проходження (*100 мс)
 
 var level = 1; // рівень
+var expectedLevel = 1; // рівень для спавна орбів
 var scoreIncrement = 10;
+var levelText;
 
 function preload ()
 {
@@ -44,6 +46,7 @@ function preload ()
         'assets/knight.png',
         { frameWidth: 117, frameHeight: 141 }
     );
+    this.load.image('orb', 'assets/orb.png');
 }
 
 function create ()
@@ -53,14 +56,7 @@ function create ()
 
     // платформи (на фіксованих позиціях)
     platforms = this.physics.add.staticGroup();
-
-    platforms.create(400, 568, 'ground').setScale(2).refreshBody();
-
-    platforms.create(600, 400, 'ground');
-    platforms.create(50, 250, 'ground');
-    platforms.create(750, 220, 'ground');
     
-
     // гравець
     player = this.physics.add.sprite(100, 450, 'dude');
 
@@ -125,6 +121,7 @@ function create ()
 
     scoreText = this.add.text(16, 16, 'Очок: 0', { fontSize: '32px', fill: '#000' }); // додати текст до текстової змінної очків
     timerText = this.add.text(16, 50, 'Час: 00:00.0', { fontSize: '32px', fill: '#000' }); // додати початковий текст до таймера
+    levelText = this.add.text(600, 16, 'Рівень: 1', { fontSize: '32px', fill: '#000' });
 
     const timerFunction = setInterval(function() {
         if (!timerOn) {return;} // якщо таймер вимкнено, нічого не робити
@@ -135,6 +132,15 @@ function create ()
     fetchLeaderboard();
 
 //  changeLevel(3);
+
+    // орби
+    orbs = this.physics.add.group();
+
+    this.physics.add.collider(orbs, platforms);
+    this.physics.add.overlap(player, orbs, collectOrb, null, this);
+
+    // задати перший рівень, розпочавши гру
+    changeLevel(1);
 }
 
 function update ()
@@ -186,7 +192,7 @@ function collectStar (player, star)
 
         // створити одну бомбу
         var bomb = bombs.create(x, 16, 'bomb');
-        bomb.setBounce(1); // максимальна стрибучість
+        bomb.setBounce(0.999); // майже максимальна стрибучість
         bomb.setCollideWorldBounds(true);
         bomb.setVelocity(Phaser.Math.Between(-200, 200), 20); // з випадковою швидкістю
 
@@ -213,6 +219,30 @@ function collectStar (player, star)
     if (update) {
         updateLeaderboard(new Array(highScore, time120, time250, time500));
     }
+
+    // для спавна орбів
+    if (score >= expectedLevel * 100) {
+        expectedLevel++;
+        spawnOrb();
+    }
+}
+
+function spawnOrb()
+{
+    var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+    var orb = orbs.create(x, 16, 'orb');
+    orb.setBounce(0.999);
+    orb.setCollideWorldBounds(true);
+    orb.setVelocity(Phaser.Math.Between(-200, 200), 20); // з випадковою швидкістю
+}
+
+function collectOrb(player, orb)
+{
+    level++; // збільшити рівень
+    score += 2 * scoreIncrement; // нарахувати подвійну кількість очок
+    scoreText.setText('Очок: ' + score); // оновити
+    orb.disableBody(true, true); // видалити орб
+    changeLevel(level);
 }
 
 // коли гравець зіштовхнувся з бомбою
@@ -228,7 +258,7 @@ function hitBomb (player, bomb)
 
     saveCookie(new Array(highScore, time120, time250, time500)); // зберегти cookie з даними лідерборду
 
-    window.alert("Ваш герой взірвався!\nВи отримали " + score + " очок\nза " + formatTimerText(timer) + "."); // вивести на екран як модальне вікно
+    window.alert("Ваш герой взірвався!\nВи отримали " + score + " очок і дійшли до " + level + " рівня за " + formatTimerText(timer) + "."); // вивести на екран як модальне вікно
 
     gameOver = true;
 
@@ -286,20 +316,22 @@ function changeLevel(level)
 {
     platforms.clear(true, true); // очищає всі платформи
     platforms.create(400, 568, 'ground').setScale(2).refreshBody();
-    if (level == 1) {
+    // рівні повторюються через 3
+    if (level % 3 == 1) {
         platforms.create(600, 400, 'ground');
         platforms.create(50, 250, 'ground');
         platforms.create(750, 220, 'ground');
     }
-    if (level == 2) {
+    if (level % 3 == 2) {
         platforms.create(200, 380, 'ground');
         platforms.create(100, 250, 'ground');
     }
-    if (level == 3) {
+    if (level % 3 == 0) {
         platforms.create(555, 360, 'ground');
         platforms.create(100, 200, 'ground');
         platforms.create(700, 200, 'ground');
     }
 
     scoreIncrement = 9 + level; // змінити кількість очок, що нараховується
+    levelText.setText('Рівень: ' + level); // змінити текст
 }
