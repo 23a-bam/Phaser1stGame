@@ -222,7 +222,11 @@ function hitBomb (player, bomb)
 
     saveCookie(new Array(highScore, time120, time250, time500)); // зберегти cookie з даними лідерборду
 
+    window.alert("Ваш герой взірвався!\nВи отримали " + score + " очок\nза " + formatTimerText(timer) + "."); // вивести на екран як модальне вікно
+
     gameOver = true;
+
+    location.reload(); // перезавантажити сторінку
 }
 
 function formatTimerText(time)
